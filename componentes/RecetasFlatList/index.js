@@ -8,7 +8,7 @@ export default function RecetasFlatList({ recetas }) {
             data={recetas}
             keyExtractor={(item) => item.id.toString()}
             numColumns={2}
-            columnWrapperStyle={styles.row}   // 👈 clave
+            columnWrapperStyle={styles.row}  
             contentContainerStyle={styles.listContainer}
             renderItem={({ item }) => <Receta receta={item} />}
 
@@ -19,8 +19,8 @@ export default function RecetasFlatList({ recetas }) {
 
 const styles = StyleSheet.create({
     row: {
-        justifyContent: "space-between", // 👈 separa las dos columnas
-        paddingHorizontal: 10,           // 👈 agrega margen igual a ambos lados
+        justifyContent: "space-between", 
+        paddingHorizontal: 10,          
     },
     listContainer: {
         paddingVertical: 10

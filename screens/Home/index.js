@@ -5,11 +5,13 @@ import { FAB, Icon, Divider } from "@rneui/themed"
 
 import { useState, useEffect } from "react"
 import { getRecetas, agregarReceta } from "../../servicios/Recetas"
+import { useNavigation } from "@react-navigation/native"
 
 export default function Home() {
 
-    const [recetas, setRecetas] = useState([])
     // const [showForm, setForm] = useState(false)
+    const [recetas, setRecetas] = useState([])
+    const navigation = useNavigation()
 
     useEffect(() => {
         getRecetas().then((recetas) => {
@@ -27,7 +29,7 @@ export default function Home() {
                 icon={<Icon name="add" type="material" color="white" />}
                 color="#1E88E5"
                 placement="right"
-                onPress={console.log("Agregar nueva receta...")}
+                onPress={() => navigation.navigate("Formulario")}
             />
             <StatusBar style="auto" />
         </>

@@ -1,13 +1,20 @@
-// import "react-native-gesture-handler"
-import { StyleSheet, Text, View } from 'react-native';
+//*** Importaciones de React ***
 import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+//*** Importaciones de React-Navigation ***
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+//*** Importaciones de pantallas ***
 import FormularioRecetas from './screens/Form';
 import Home from './screens/Home';
 
 export default function App() {
 
   const [showForm, setForm] = useState(true)
+  const Stack = createNativeStackNavigator()
 
   const cambiar = () => {
     setForm(!showForm)
@@ -15,9 +22,12 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {
-        showForm ? <FormularioRecetas cambiar={cambiar} /> : <Home />
-      }
+      <NavigationContainer>
+        <Stack.Navigator > 
+          <Stack.Screen name="Home" component={Home} options={{headerShown: false}}/>
+          <Stack.Screen name="Formulario" component={FormularioRecetas} options={{title: "Añadir receta"}}/>
+        </Stack.Navigator>
+      </NavigationContainer>
     </SafeAreaView>
   )
 }
@@ -25,6 +35,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f6f7f8',
-  },
+  }
 });

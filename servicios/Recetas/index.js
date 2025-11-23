@@ -1,6 +1,6 @@
 import random from "../../utils/lib.js"
 
-const MAX_RECETAS = 1
+const MAX_RECETAS = 4
 
 const recetasBase = {
     "MIlanesa con pure": {

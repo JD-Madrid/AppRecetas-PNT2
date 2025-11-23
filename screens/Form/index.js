@@ -3,8 +3,11 @@ import { useState } from 'react'
 import { TextInput, View, Text, StyleSheet } from "react-native"
 import { Rating } from 'react-native-ratings'
 import RNPickerSelect from "react-native-picker-select";
+import { useNavigation } from '@react-navigation/native';
 
-export default function FormularioRecetas({ cambiar }) {
+export default function FormularioRecetas() {
+
+    const navigation = useNavigation()
 
     const [receta, setReceta] = useState({
         nombre: "",
@@ -29,7 +32,7 @@ export default function FormularioRecetas({ cambiar }) {
         <View style={styles.container}>
 
             <View style={styles.header}>
-                <Text style={styles.titulo}>Añadir receta</Text>
+                {/* <Text style={styles.titulo}>Añadir receta</Text> */}
             </View>
 
             <View style={styles.form_container}>
@@ -95,7 +98,7 @@ export default function FormularioRecetas({ cambiar }) {
             </View>
             <View style={styles.botones}>
                 <Button title="Aceptar" onPress={guardarReceta} />
-                <Button title="Cancelar" onPress={cambiar} />
+                <Button title="Cancelar" onPress={() => navigation.goBack()} />
             </View>
         </View>
     )
