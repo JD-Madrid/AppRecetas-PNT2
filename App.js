@@ -1,3 +1,4 @@
+import "react-native-gesture-handler"
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 //--
@@ -11,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FAB, Divider, Icon } from '@rneui/themed';
 
-import FormularioRecetas from './componentes/RecetaFormulario';
+import FormularioRecetas from './screens/Form';
 
 export default function App() {
 
