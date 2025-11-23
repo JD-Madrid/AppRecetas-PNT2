@@ -1,30 +1,13 @@
-import "react-native-gesture-handler"
-import { StatusBar } from 'expo-status-bar';
+// import "react-native-gesture-handler"
 import { StyleSheet, Text, View } from 'react-native';
-//--
-import { getRecetas, agregarReceta } from "./servicios/Recetas"
-import Header from "./componentes/Header"
-
 import { useState, useEffect } from 'react';
-
-import RecetasFlatList from "./componentes/RecetasFlatList"
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { FAB, Divider, Icon } from '@rneui/themed';
-
 import FormularioRecetas from './screens/Form';
+import Home from './screens/Home';
 
 export default function App() {
 
-  const [recetas, setRecetas] = useState([])
-  const [showForm, setForm] = useState(false)
-
-  useEffect(() => {
-    getRecetas().then((recetas) => {
-      console.log(recetas)
-      setRecetas(recetas)
-    })
-  }, [])
+  const [showForm, setForm] = useState(true)
 
   const cambiar = () => {
     setForm(!showForm)
@@ -32,24 +15,11 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-
       {
-        showForm ? <FormularioRecetas cambiar={cambiar}/> : (
-          <>
-            <Header />
-            <Divider width={1} />
-            <RecetasFlatList recetas={recetas} />
-            <FAB
-              icon={<Icon name="add" type="material" color="white" />}
-              color="#1E88E5"
-              placement="right"
-              onPress={() => setForm(!showForm)}
-            />
-            <StatusBar style="auto" />
-          </>
-        )}
+        showForm ? <FormularioRecetas cambiar={cambiar} /> : <Home />
+      }
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
