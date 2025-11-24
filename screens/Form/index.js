@@ -1,106 +1,162 @@
 import { Button, ButtonGroup } from '@rneui/themed'
 import { useState } from 'react'
-import { TextInput, View, Text, StyleSheet } from "react-native"
+import { TextInput, View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from "react-native"
 import { Rating } from 'react-native-ratings'
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from '@react-navigation/native';
 
+import { agregarReceta } from '../../servicios/Recetas';
+
+//Validaciones
+import { recetaSchema } from '../../validacion/recetasSchema';
+
 export default function FormularioRecetas() {
 
     const navigation = useNavigation()
-
+    const [errores, setErrores] = useState({})
+    
     const [receta, setReceta] = useState({
         nombre: "",
         tipo: "",
         descripcion: "",
         tiempo: "",
         dificultad: "",
-        valorizacion: 0
+        valoracion: 0
     })
 
     // Funcion para ir guardando los ingresos del form
-    const manejarIngresos = (key, valor) => {
+    const handleChange = (key, valor) => {
         setReceta(previo => ({ ...previo, [key]: valor }))
+
+        // Si ese campo tenía un error, lo borramos
+        if (errores[key]) {
+            setErrores(prev => ({ ...prev, [key]: null }));
+        }
+
     }
 
-    // Guardamos el objeto al darle en el boton aceptar
-    const guardarReceta = () => {
-        console.log(receta)
+    // Aca validamos que no haya errores o campos vacios
+    const handleSubmit = () => {
+        const resultado = recetaSchema.safeParse(receta)
+
+        if (!resultado.success) {
+            const formularioErrores = {}
+            resultado.error.issues.forEach(err => {
+                const campo = err.path[0]
+                formularioErrores[campo] = err.message;
+            });
+
+            setErrores(formularioErrores)
+            console.log("Errores:", formularioErrores)
+            return
+        }
+
+        // Si esta ok, guardamos
+        try {
+            const nueva = agregarReceta(receta)
+                .then(receta => console.log("Receta agregada: ", receta))
+
+            setReceta({
+                nombre: "",
+                tipo: "",
+                descripcion: "",
+                tiempo: "",
+                dificultad: "",
+                valorizacion: 0
+            })
+
+            navigation.goBack()  // Volvemos a la pagina principal al guardar 
+        } catch (error) {
+            console.log("Error guardando la receta: ", receta)
+        }
     }
 
     return (
-        <View style={styles.container}>
 
-            <View style={styles.header}>
-                {/* <Text style={styles.titulo}>Añadir receta</Text> */}
-            </View>
+        <KeyboardAvoidingView style={{ flex: 1 }}>
 
-            <View style={styles.form_container}>
-                <TextInput
-                    style={styles.input_form}
-                    name="nobre"
-                    placeholder="Nombre"
-                    value={receta.nombre}
-                    onChangeText={(nuevo) => manejarIngresos("nombre", nuevo)}
-                />
-                <RNPickerSelect
-                    placeholder={{
-                        label: "Selecciona el tipo de receta...",
-                        value: null,
-                    }}
-                    value={receta.tipo}
-                    onValueChange={(valor) => manejarIngresos("tipo", valor)}
-                    items={[
-                        { label: "Entrada", value: "entrada" },
-                        { label: "Plato principal", value: "plato principal" },
-                        { label: "Postre", value: "postre" }
-                    ]}
-                    style={styles.pickerSelectStyles}
-                />
-                <TextInput
-                    style={styles.input_form}
-                    name="descripcion"
-                    placeholder="Escribe la descripción de la receta..."
-                    value={receta.descripcion}
-                    onChangeText={(nuevo) => manejarIngresos("descripcion", nuevo)}
-                    multiline={true}
-                    numberOfLines={6}
-                    textAlignVertical="top"
-                />
-                <TextInput
-                    style={styles.input_form}
-                    name="tiempo"
-                    placeholder="Tiempo"
-                    keyboardType="numeric"
-                    value={receta.tiempo}
-                    onChangeText={(nuevo) => manejarIngresos("tiempo", nuevo)}
-                />
-                <ButtonGroup
-                    containerStyle={styles.boton_group_dificultad}
-                    buttons={["baja", "media", "alta"]}
-                    selectedIndex={["baja", "media", "alta"].indexOf(receta.dificultad)}
-                    onPress={(index) => {
-                        console.log("dificulta seleccionada", index)
-                        manejarIngresos("dificultad", ["baja", "media", "alta"][index])
-                    }}
-                />
-                <Rating
-                style={styles.rating_container}
-                    type="star"
-                    ratingCount={5}
-                    imageSize={50}
-                    startingValue={receta.valorizacion}
-                    onFinishRating={(rating) => {
-                        console.log("valor estrella seleccionada: ", rating)
-                        manejarIngresos('valorizacion', rating)
-                    }}
-                />
-            </View>
-            <View style={styles.botones}>
-                <Button title="Aceptar" onPress={guardarReceta} />
-                <Button title="Cancelar" onPress={() => navigation.goBack()} />
-            </View>
-        </View>
+            <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <Text style={styles.titulo}>Añadir receta</Text>
+                    </View>
+                    <View style={styles.form_container}>
+                        <TextInput
+                            style={styles.input_form}
+                            name="nobre"
+                            placeholder="Nombre"
+                            value={receta.nombre}
+                            onChangeText={(nuevo) => handleChange("nombre", nuevo)}
+                        />
+                        {errores.nombre && <Text style={styles.error}>{errores.nombre}</Text>}
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                placeholder={{
+                                    label: "Selecciona el tipo de receta...",
+                                    value: null,
+                                }}
+                                value={receta.tipo}
+                                onValueChange={(valor) => handleChange("tipo", valor)}
+                                items={[
+                                    { label: "Entrada", value: "entrada" },
+                                    { label: "Plato principal", value: "plato principal" },
+                                    { label: "Postre", value: "postre" }
+                                ]}
+                                style={styles.pickerSelectStyles}
+                            />
+                        </View>
+                        {errores.tipo && <Text style={styles.error}>{errores.tipo}</Text>}
+                        <TextInput
+                            style={styles.input_form}
+                            name="descripcion"
+                            placeholder="Escribe la descripción de la receta..."
+                            value={receta.descripcion}
+                            onChangeText={(nuevo) => handleChange("descripcion", nuevo)}
+                            multiline={true}
+                            numberOfLines={6}
+                            textAlignVertical="top"
+                        />
+                        {errores.descripcion && <Text style={styles.error}>{errores.descripcion}</Text>}
+                        <TextInput
+                            style={styles.input_form}
+                            name="tiempo"
+                            placeholder="Tiempo"
+                            keyboardType="numeric"
+                            value={receta.tiempo}
+                            onChangeText={(nuevo) => handleChange("tiempo", nuevo)}
+                        />
+                        {errores.tiempo && <Text style={styles.error}>{errores.tiempo}</Text>}
+                        <ButtonGroup
+                            containerStyle={styles.boton_group_dificultad}
+                            buttons={["baja", "media", "alta"]}
+                            selectedIndex={["baja", "media", "alta"].indexOf(receta.dificultad)}
+                            onPress={(index) => {
+                                handleChange("dificultad", ["baja", "media", "alta"][index])
+                            }}
+                        />
+                        {errores.dificultad && <Text style={styles.error}>{errores.dificultad}</Text>}
+                        <Rating
+                            style={styles.rating_container}
+                            type="star"
+                            ratingCount={5}
+                            imageSize={50}
+                            defaultRating={receta.valoracion}
+                            onFinishRating={(rating) => {
+                                console.log("Valoracion: ",rating)
+                                handleChange('valoracion', rating)
+                            }}
+                        />
+                        {errores.valoracion && <Text style={styles.error}>{errores.valoracion}</Text>}
+                    </View>
+                    <View style={styles.botones}>
+                        <Button title="Aceptar" onPress={handleSubmit} />
+                        <Button title="Cancelar" onPress={() => navigation.goBack()} />
+                    </View>
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
+
+
     )
 }
 
@@ -142,18 +198,16 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         fontWeight: "bold"
     },
+    pickerContainer: {
+        borderWidth: 1,
+        borderColor: "#fac6c6ff",
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        marginVertical: 8,
+        backgroundColor: "#fff",
+    },
     pickerSelectStyles: {
-        inputIOS: {
-            fontSize: 16,
-            paddingVertical: 12,
-            paddingHorizontal: 10,
-            borderWidth: 5,
-            borderColor: "gray",
-            borderRadius: 8,
-            color: "black",
-            paddingRight: 30,
-            marginVertical: 8
-        },
         inputAndroid: {
             fontSize: 16,
             paddingHorizontal: 10,
@@ -165,5 +219,9 @@ const styles = StyleSheet.create({
             paddingRight: 30,
             marginVertical: 8
         }
+    },
+    error: {
+        color: "red",
+        fontSize: 14,
     }
 })

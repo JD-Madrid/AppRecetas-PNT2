@@ -1,6 +1,6 @@
 import random from "../../utils/lib.js"
 
-const MAX_RECETAS = 4
+const MAX_RECETAS = 5
 
 const recetasBase = {
     "MIlanesa con pure": {
@@ -8,21 +8,21 @@ const recetasBase = {
         descripcion: "Un clásico argentino: milanesa crocante con puré cremoso.",
         tiempo: 10,
         dificultad: "BAJA",
-        valorizacion: 5
+        valoracion: 5
     },
     "Ensalada César": {
         tipo: "entrada",
         descripcion: "Una ensalada fresca con pollo, crutones y aderezo suave.",
         tiempo: 5,
         dificultad: "MEDIA",
-        valorizacion: 2
+        valoracion: 2
     },
     "Helado casero": {
         tipo: "postre",
         descripcion: "Helado artesanal frío y cremoso, ideal para días calurosos.",
         tiempo: 8,
         dificultad: "ALTA",
-        valorizacion: 4
+        valoracion: 4
     }
 }
 
@@ -33,6 +33,7 @@ const dificultad = ["BAJA", "MEDIA", "ALTA"]
 const nombres = Object.keys(recetasBase)
 
 const getRandomNombre = () => {
+    console.log(nombres)
     return nombres[random(0, nombres.length - 1)]
 }
 
@@ -54,8 +55,8 @@ const getRandomDificultad = () => {
     return dificultad[random(0, dificultad.length - 1)]
 }
 
-const getRandomValorizacion = () => {
-    return random(0, 5)
+const getRandomValoracion= () => {
+    return random(1, 5)
 }
 
 const generarRecetas = () => {
@@ -64,7 +65,7 @@ const generarRecetas = () => {
     const descripcion = getDesripcion(nombre)
     const tiempo = getRandomTiempo()
     const dificultad = getRandomDificultad()
-    const valorizacion = getRandomValorizacion()
+    const valoracion = getRandomValoracion()
 
     return {
         nombre,
@@ -72,7 +73,7 @@ const generarRecetas = () => {
         descripcion,
         tiempo,
         dificultad,
-        valorizacion
+        valoracion
     }
 }
 
@@ -94,7 +95,7 @@ const getRecetas = () => {
 }
 
 const agregarReceta = (receta) => {
-    return new Promise((reject, resolve) => {
+    return new Promise((resolve, reject) => {
         console.log("Agregando receta...")
         setTimeout(() => {
             const newReceta = { ...receta, id: recetas.length + 1 }

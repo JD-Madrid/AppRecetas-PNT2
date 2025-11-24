@@ -11,7 +11,6 @@ export default function RecetasFlatList({ recetas }) {
             columnWrapperStyle={styles.row}  
             contentContainerStyle={styles.listContainer}
             renderItem={({ item }) => <Receta receta={item} />}
-
         />
     )
 

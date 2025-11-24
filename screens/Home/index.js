@@ -9,7 +9,6 @@ import { useNavigation } from "@react-navigation/native"
 
 export default function Home() {
 
-    // const [showForm, setForm] = useState(false)
     const [recetas, setRecetas] = useState([])
     const navigation = useNavigation()
 
@@ -19,6 +18,8 @@ export default function Home() {
             setRecetas(recetas)
         })
     }, [])
+    
+    
 
     return (
         <>

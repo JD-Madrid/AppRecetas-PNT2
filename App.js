@@ -13,19 +13,14 @@ import Home from './screens/Home';
 
 export default function App() {
 
-  const [showForm, setForm] = useState(true)
   const Stack = createNativeStackNavigator()
-
-  const cambiar = () => {
-    setForm(!showForm)
-  }
 
   return (
     <SafeAreaView style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator > 
           <Stack.Screen name="Home" component={Home} options={{headerShown: false}}/>
-          <Stack.Screen name="Formulario" component={FormularioRecetas} options={{title: "Añadir receta"}}/>
+          <Stack.Screen name="Formulario" component={FormularioRecetas} options={{headerShown: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

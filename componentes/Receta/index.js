@@ -4,7 +4,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
 const IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPBDvnGr8LIznhiF3rc_hBusaOh5WLTwJCA&s"
 
-export default function Receta() {
+export default function Receta({receta}) {
     return (
         <TouchableOpacity style={styles.container} onPress={() => console.log("Touchable")}>
             <Card containerStyle={styles.card_container}>
@@ -15,16 +15,16 @@ export default function Receta() {
                             style={{ width: "100%", height: "220" }} borderRadius={10}
                             resizeMode="cover"
                         />
-                        <Text style={styles.header_titulo}>Ensalada Cesar con pollo</Text>
+                        <Text style={styles.header_titulo}>{receta.nombre}</Text>
                     </View>
                     <View style={styles.card_info}>
                         <View style={styles.tiempo_container}>
                             <Icon name="schedule" type="material" size={16} color="#5A9690" />
-                            <Text style={styles.text_tiempo}>20 min</Text>
+                            <Text style={styles.text_tiempo}>{receta.tiempo} min</Text>
                         </View>
                         <View style={styles.estrella_container}>
                             <MaterialIcons name="star" size={20} color="#FFD700" />
-                            <Text style={styles.text_estrella}>4.5</Text>
+                            <Text style={styles.text_estrella}>{receta.valoracion}.0</Text>
                         </View>
                     </View>
                 </View>
@@ -60,14 +60,15 @@ const styles = StyleSheet.create({
     },
     card_info: {
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         paddingBottom: 10,
-        gap: 50
+        gap: 40
     },
     tiempo_container: {
         flexDirection: "row",
         gap: 4,
-        alignItems: "center"
+        alignItems: "center",
+        paddingLeft: 5
     },
     text_tiempo: {
         color: "#5A9690",
