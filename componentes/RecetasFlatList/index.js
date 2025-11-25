@@ -13,7 +13,6 @@ export default function RecetasFlatList({ recetas }) {
             renderItem={({ item }) => <Receta receta={item} />}
         />
     )
-
 }
 
 const styles = StyleSheet.create({

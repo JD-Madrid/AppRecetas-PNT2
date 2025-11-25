@@ -3,23 +3,21 @@ import RecetasFlatList from "../../componentes/RecetasFlatList"
 import { StatusBar } from "expo-status-bar"
 import { FAB, Icon, Divider } from "@rneui/themed"
 
-import { useState, useEffect } from "react"
 import { getRecetas, agregarReceta } from "../../servicios/Recetas"
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation, useFocusEffect } from "@react-navigation/native"
+import { useCallback } from "react"
+ 
+export default function Home({recetas, setRecetas}) {
 
-export default function Home() {
-
-    const [recetas, setRecetas] = useState([])
     const navigation = useNavigation()
 
-    useEffect(() => {
-        getRecetas().then((recetas) => {
-            console.log(recetas)
-            setRecetas(recetas)
-        })
-    }, [])
-    
-    
+     useFocusEffect(
+        useCallback(() => {
+            getRecetas()
+                .then((r) => setRecetas(r))
+                .catch(err => console.log("Error cargando recetas", err))
+        }, [])
+    )
 
     return (
         <>

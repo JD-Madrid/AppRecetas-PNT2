@@ -1,17 +1,20 @@
 import { Card, Icon } from "@rneui/themed";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-const IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPBDvnGr8LIznhiF3rc_hBusaOh5WLTwJCA&s"
+export default function Receta({ receta }) {
+    const navigation = useNavigation()
 
-export default function Receta({receta}) {
     return (
-        <TouchableOpacity style={styles.container} onPress={() => console.log("Touchable")}>
+        <TouchableOpacity style={styles.container}
+            onPress={() => navigation.navigate("Detalle", {id: receta.id})}
+        >
             <Card containerStyle={styles.card_container}>
                 <View style={styles.header_container}>
                     <View style={styles.header}>
                         <Image
-                            source={{ uri: IMAGE_URL }}
+                            source={{ uri: receta.imagen }}
                             style={{ width: "100%", height: "220" }} borderRadius={10}
                             resizeMode="cover"
                         />
