@@ -8,14 +8,14 @@ export default function Receta({ receta }) {
 
     return (
         <TouchableOpacity style={styles.container}
-            onPress={() => navigation.navigate("Detalle", {id: receta.id})}
+            onPress={() => navigation.navigate("Detalle", { id: receta.id })}
         >
             <Card containerStyle={styles.card_container}>
                 <View style={styles.header_container}>
                     <View style={styles.header}>
                         <Image
                             source={{ uri: receta.imagen }}
-                            style={{ width: "100%", height: "220" }} borderRadius={10}
+                            style={{ width: "100%", height: 220 }} borderRadius={10}
                             resizeMode="cover"
                         />
                         <Text style={styles.header_titulo}>{receta.nombre}</Text>
@@ -27,7 +27,9 @@ export default function Receta({ receta }) {
                         </View>
                         <View style={styles.estrella_container}>
                             <MaterialIcons name="star" size={20} color="#FFD700" />
-                            <Text style={styles.text_estrella}>{receta.valoracion}.0</Text>
+                            <Text style={styles.text_estrella}>
+                                {receta.valoracion ? `${receta.valoracion}.0` : "0.0"}
+                            </Text>
                         </View>
                     </View>
                 </View>

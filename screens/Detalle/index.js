@@ -28,7 +28,6 @@ export default function Detalles() {
         }, [id])
     )
 
-
     useEffect(() => {
 
     }, [id]);
@@ -55,7 +54,6 @@ export default function Detalles() {
                     />
 
                     <View style={styles.info_container}>
-                        {/* Contenedor horizontal: texto a la izquierda, estrella a la derecha */}
                         <View style={styles.info_row}>
                             <View style={styles.texto_container}>
                                 <Text style={styles.titulo}>{receta.nombre}</Text>
@@ -70,7 +68,7 @@ export default function Detalles() {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.botones_container}>
-                            <Button buttonStyle={styles.boton} title="Editar" titleStyle={styles.boton_texto} onPress={() => navigation.navigate("Formulario", { recetaData: receta })} />
+                            <Button buttonStyle={styles.boton} title="Editar" titleStyle={styles.boton_texto} onPress={() => navigation.navigate("Form", { recetaData: receta })} />
                             <Button buttonStyle={styles.boton} title="Borrar" titleStyle={styles.boton_texto} onPress={handleEliminar} />
                         </View>
                     </View>
@@ -111,12 +109,22 @@ const styles = StyleSheet.create({
         color: "#999999ff"
     },
     icono_favorito: {
+        // marginLeft: 12,
+        // justifyContent: "flex-start",
+        // backgroundColor: "#fcfcfcff",
+        // borderRadius: 40,
+        // padding: 10,
+        // elevation: 3
         marginLeft: 12,
         justifyContent: "flex-start",
         backgroundColor: "#fcfcfcff",
         borderRadius: 40,
         padding: 10,
-        elevation: 3
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 5,
     },
     botones_container: {
         justifyContent: "center",

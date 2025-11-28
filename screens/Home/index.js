@@ -6,10 +6,12 @@ import { FAB, Icon, Divider } from "@rneui/themed"
 import { getRecetas, agregarReceta } from "../../servicios/Recetas"
 import { useNavigation, useFocusEffect } from "@react-navigation/native"
 import { useCallback } from "react"
+import { useRecetas } from "../../hooks/useRecetas"
  
-export default function Home({recetas, setRecetas}) {
+export default function Home() {
 
     const navigation = useNavigation()
+    const {recetas,setRecetas} = useRecetas()
 
      useFocusEffect(
         useCallback(() => {
@@ -28,7 +30,7 @@ export default function Home({recetas, setRecetas}) {
                 icon={<Icon name="add" type="material" color="white" />}
                 color="#1E88E5"
                 placement="right"
-                onPress={() => navigation.navigate("Formulario")}
+                onPress={() => navigation.navigate("Form")}
             />
             <StatusBar style="auto" />
         </>

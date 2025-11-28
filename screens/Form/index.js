@@ -5,15 +5,17 @@ import { Rating } from 'react-native-ratings'
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { agregarReceta, getRecetas, editarReceta } from '../../servicios/Recetas';
+import { useRecetas } from "../../hooks/useRecetas"
 
 //Validaciones
 import { recetaSchema } from '../../validacion/recetasSchema';
 
-export default function FormularioRecetas({ recetas, setRecetas }) {
+export default function FormularioRecetas() {
 
     //Receta proveniente de DETALLE para actualizar
-    const { recetaData } = useRoute().params || {}
+    const {recetas,setRecetas} = useRecetas()
 
+    const { recetaData } = useRoute().params || {}
     const navigation = useNavigation()
     const [errores, setErrores] = useState({})
 
@@ -51,10 +53,9 @@ export default function FormularioRecetas({ recetas, setRecetas }) {
             return;
         }
 
-        // Si esta ok, guardamos
         // OPCION 1: Sintaxis ASYNC-AWAIT
         try {
-            
+
             if (recetaData?.id) {
                 // Actualizamos un vehiculo 
                 console.log("Editando receta ID:", recetaData.id)
@@ -96,7 +97,9 @@ export default function FormularioRecetas({ recetas, setRecetas }) {
             <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
                     <View style={styles.header}>
-                        <Text style={styles.titulo}>Añadir receta</Text>
+                        <Text style={styles.titulo}>
+                            {recetaData?.id ? "Editar receta" : "Añadir receta"}
+                        </Text>
                     </View>
 
                     <View style={styles.form_container}>
@@ -107,7 +110,7 @@ export default function FormularioRecetas({ recetas, setRecetas }) {
                             value={receta.nombre}
                             onChangeText={(nuevo) => handleChange("nombre", nuevo)}
                         />
-                        {errores.nombre && <Text style={styles.error}>{errores.nombre}</Text>}
+                        {errores.nombre && <Text style={styles.error}>{String(errores.nombre)}</Text>}
 
                         <View style={styles.pickerContainer}>
                             <RNPickerSelect
@@ -125,7 +128,7 @@ export default function FormularioRecetas({ recetas, setRecetas }) {
                                 style={styles.pickerSelectStyles}
                             />
                         </View>
-                        {errores.tipo && <Text style={styles.error}>{errores.tipo}</Text>}
+                        {errores.tipo && <Text style={styles.error}>{String(errores.tipo)}</Text>}
 
                         <TextInput
                             style={styles.input_form}
@@ -137,17 +140,17 @@ export default function FormularioRecetas({ recetas, setRecetas }) {
                             numberOfLines={6}
                             textAlignVertical="top"
                         />
-                        {errores.descripcion && <Text style={styles.error}>{errores.descripcion}</Text>}
+                        {errores.descripcion && <Text style={styles.error}>{String(errores.descripcion)}</Text>}
 
                         <TextInput
                             style={styles.input_form}
                             name="tiempo"
                             placeholder="Tiempo"
                             keyboardType="numeric"
-                            value={receta.tiempo}
+                            value={receta.tiempo?.toString() || ""}
                             onChangeText={(nuevo) => handleChange("tiempo", nuevo)}
                         />
-                        {errores.tiempo && <Text style={styles.error}>{errores.tiempo}</Text>}
+                        {errores.tiempo && <Text style={styles.error}>{String(errores.tiempo)}</Text>}
 
                         <ButtonGroup
                             containerStyle={styles.boton_group_dificultad}
@@ -157,7 +160,7 @@ export default function FormularioRecetas({ recetas, setRecetas }) {
                                 handleChange("dificultad", ["baja", "media", "alta"][index])
                             }}
                         />
-                        {errores.dificultad && <Text style={styles.error}>{errores.dificultad}</Text>}
+                        {errores.dificultad && <Text style={styles.error}>{String(errores.dificultad)}</Text>}
 
                         <Rating
                             style={styles.rating_container}
@@ -170,17 +173,7 @@ export default function FormularioRecetas({ recetas, setRecetas }) {
                                 handleChange('valoracion', rating)
                             }}
                         />
-                        {errores.valoracion && <Text style={styles.error}>{errores.valoracion}</Text>}
-
-                        {/* Configurar si da tiempo que el clienre suba una foto */}
-                        {/* <TextInput
-                            style={styles.input_form}
-                            name="imagen"
-                            placeholder="Imagen (opcional)"
-                            value={receta.imagen}
-                            onChangeText={(nuevo) => handleChange("imagen", nuevo)}
-                        /> */}
-
+                        {errores.valoracion && <Text style={styles.error}>{String(errores.valoracion)}</Text>}
                     </View>
                     <View style={styles.botones}>
                         <Button title="Aceptar" onPress={handleSubmit} />
