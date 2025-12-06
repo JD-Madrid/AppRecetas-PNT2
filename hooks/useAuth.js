@@ -4,10 +4,14 @@ const AuthData = createContext()
 
 export function AuthProvider({children}) {
 
-    const [auth, setAuth] = useState(null)
+    const [auth, setAuth] = useState({})
+
+    const logout  = () => {
+        setAuth(null)
+    }
 
     return (
-        <AuthData.Provider value={{auth,setAuth}}>
+        <AuthData.Provider value={{auth,setAuth,logout}}>
             {children}
         </AuthData.Provider>
     ) 
