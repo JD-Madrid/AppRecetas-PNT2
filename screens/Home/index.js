@@ -6,12 +6,16 @@ import { FAB, Icon, Divider } from "@rneui/themed"
 import { getRecetas, agregarReceta } from "../../servicios/Recetas"
 import { useNavigation, useFocusEffect } from "@react-navigation/native"
 import { useCallback } from "react"
- 
-export default function Home({recetas, setRecetas}) {
+import { useRecetas } from "../../hooks/useRecetas"
+import { useAuth } from "../../hooks/useAuth"
 
+export default function Home() {
+
+    const { logout } = useAuth()
     const navigation = useNavigation()
+    const { recetas, setRecetas } = useRecetas()
 
-     useFocusEffect(
+    useFocusEffect(
         useCallback(() => {
             getRecetas()
                 .then((r) => setRecetas(r))
@@ -21,16 +25,16 @@ export default function Home({recetas, setRecetas}) {
 
     return (
         <>
-            <Header />
-            <Divider width={1} />
+            <Header logout={logout}/>
             <RecetasFlatList recetas={recetas} />
             <FAB
                 icon={<Icon name="add" type="material" color="white" />}
                 color="#1E88E5"
                 placement="right"
-                onPress={() => navigation.navigate("Formulario")}
+                onPress={() => navigation.navigate("Form")}
             />
             <StatusBar style="auto" />
         </>
     )
 }
+
