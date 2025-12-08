@@ -13,7 +13,7 @@ import { recetaSchema } from '../../validacion/recetasSchema';
 export default function FormularioRecetas() {
 
     //Receta proveniente de DETALLE para actualizar
-    const {recetas,setRecetas} = useRecetas()
+    const { recetas, setRecetas } = useRecetas()
 
     const { recetaData } = useRoute().params || {}
     const navigation = useNavigation()
@@ -56,10 +56,10 @@ export default function FormularioRecetas() {
         // OPCION 1: Sintaxis ASYNC-AWAIT
         try {
 
-            if (recetaData?.id) {
-                // Actualizamos un vehiculo 
-                console.log("Editando receta ID:", recetaData.id)
-                const recetaEditada = await editarReceta(recetaData.id, receta)
+            if (recetaData?._id) {
+                // Actualizamos la receta
+                console.log("Editando receta ID:", recetaData._id)
+                const recetaEditada = await editarReceta(recetaData._id, receta)
 
                 console.log("Receta editada: ", recetaEditada)
 
@@ -98,7 +98,7 @@ export default function FormularioRecetas() {
                 <View style={styles.container}>
                     <View style={styles.header}>
                         <Text style={styles.titulo}>
-                            {recetaData?.id ? "Editar receta" : "Añadir receta"}
+                            {recetaData?._id ? "Editar receta" : "Añadir receta"}
                         </Text>
                     </View>
 
