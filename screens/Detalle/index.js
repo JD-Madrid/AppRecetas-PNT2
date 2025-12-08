@@ -28,9 +28,8 @@ export default function Detalles() {
         }, [id])
     )
 
-    useEffect(() => {
-
-    }, [id]);
+    // useEffect(() => {
+    // }, [id]);
 
     const handleEliminar = () => {
         eliminarReceta(id)
