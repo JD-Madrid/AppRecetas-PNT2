@@ -11,13 +11,13 @@ import { useAuth } from "../../hooks/useAuth"
 
 export default function Home() {
 
-    const { logout } = useAuth()
+    const { logout, auth } = useAuth()
     const navigation = useNavigation()
     const { recetas, setRecetas } = useRecetas()
 
     useFocusEffect(
         useCallback(() => {
-            getRecetas()
+            getRecetas(auth.access_token) // Le pasamnmos el token al getRecetas de servicio para autenticar con el backend
                 .then((r) => setRecetas(r))
                 .catch(err => console.log("Error cargando recetas", err))
         }, [])

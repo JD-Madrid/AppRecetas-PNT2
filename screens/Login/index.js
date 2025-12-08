@@ -12,8 +12,8 @@ export default function Login() {
     })
 
     const [msjError, setMsjError] = useState(null)
-    const {setAuth} = useAuth()
-    
+    const { setAuth } = useAuth()
+
     const handledSubmit = () => {
         console.log("formData", formData)
         AuthServices.login(formData.email, formData.contrasenia).then((data) => {
@@ -21,7 +21,7 @@ export default function Login() {
             setAuth(data)
             setMsjError(null)
         }).catch((error) => {
-            console.log("Error ",error)
+            console.log("Error ", error)
             setMsjError(error.message)
         })
     }
@@ -31,21 +31,21 @@ export default function Login() {
             <Text style={styles.titulo}>Login</Text>
 
             <View style={styles.input_container}>
-                <Input 
-                    placeholder="Email" 
-                    keyboardType="email-address" 
-                    autoCapitalize="none" 
+                <Input
+                    placeholder="Email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
                     value={formData.email}
-                    onChangeText={(text) => 
-                        setFormData({...formData, email:text})}
+                    onChangeText={(text) =>
+                        setFormData({ ...formData, email: text })}
                 />
-                <Input 
-                    placeholder="Password" 
-                    keyboardType="visible-password"
+                <Input
+                    placeholder="Password"
+                    // keyboardType="visible-password"
                     secureTextEntry={true}
                     value={formData.contrasenia}
-                    onChangeText={(text) => 
-                        setFormData({...formData, contrasenia:text})
+                    onChangeText={(text) =>
+                        setFormData({ ...formData, contrasenia: text })
                     }
                 />
 
