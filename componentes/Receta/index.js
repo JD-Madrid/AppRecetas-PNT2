@@ -8,7 +8,7 @@ export default function Receta({ receta }) {
 
     return (
         <TouchableOpacity style={styles.container}
-            onPress={() => navigation.navigate("Detalle", { id: receta.id })}
+            onPress={() => navigation.navigate("Detalle", { id: receta._id })}
         >
             <Card containerStyle={styles.card_container}>
                 <View style={styles.header_container}>

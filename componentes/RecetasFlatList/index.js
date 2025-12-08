@@ -6,7 +6,7 @@ export default function RecetasFlatList({ recetas }) {
     return (
         <FlatList
             data={recetas}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item._id.toString()}
             numColumns={2}
             columnWrapperStyle={styles.row}  
             contentContainerStyle={styles.listContainer}
