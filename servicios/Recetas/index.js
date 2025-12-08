@@ -3,6 +3,8 @@ import random from "../../utils/lib.js"
 const MAX_RECETAS = 2
 const IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPBDvnGr8LIznhiF3rc_hBusaOh5WLTwJCA&s"
 
+const URL_API = "http://192.168.0.12:8080"
+
 const recetasBase = {
     "MIlanesa con pure": {
         tipo: "plato principal",
@@ -83,30 +85,81 @@ let recetas = Array.from(
 })
 
 //Simulo llamada a la API
+//SIMULANDO
+// const getRecetas = () => {
+//     return new Promise((resolve, reject) => {
+//         setTimeout(() => {
+//             resolve(recetas)
+//         }, 1000)
+//     })
+// }
+
+//LLamando a la api 
 const getRecetas = () => {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve(recetas)
-        }, 1000)
+        fetch(`${URL_API}/recetas`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    throw new Error("Error al obtener las recetas")
+                }
+            })
+            .then(data => {
+                // console.log("data", data)
+                resolve(data)
+            })
+            .catch(error => {
+                // console.error("Error", error)
+                reject(error)
+            })
     })
 }
 
+//Em el caso del POST debemos pasarle 3 datos al fetch para que sepa que tipo 
+//de metodo es. 1- Json 2-Encabezado y cuerpo 3- header de autorizacion (si la tiene)  
 const agregarReceta = (receta) => {
     return new Promise((resolve, reject) => {
-        console.log("Agregando receta...")
-        setTimeout(() => {
-            const newReceta = { ...receta, id: recetas.length + 1, imagen: IMAGE_URL}
-            recetas.push(newReceta)
-            resolve(newReceta)
-        }, 1000)
-    })
-}
+        fetch(`${URL_API}/recetas`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(receta) 
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Error al agregar una receta");
+            }
+        })
+        .then(data => resolve(data))
+        .catch(error => {
+            console.log("Error", error);
+            reject(error);
+        });
+    });
+};
+
 
 const getRecetaById = (id) => {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve((recetas.find((receta) => receta.id === id)))
-        }, 1000)
+        fetch(`${URL_API}/recetas/${id}`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    throw new Error("Error al obtener la receta")
+                }
+            })
+            .then(data => {
+                resolve(data)
+            })
+            .catch(error => {
+                console.log("Error", error)
+                reject(error)
+            })
     })
 }
 
@@ -121,20 +174,7 @@ const eliminarReceta = (id) => {
 
 const editarReceta = (id, data) => {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            let encontrada = false
-            console.log("Editando receta")
 
-            recetas = recetas.map((r) => {
-                if (r.id === id) {
-                    encontrada = true
-                    return { ...r, ...data }
-                }
-                return r
-            })
-
-            encontrada ? resolve(true) : resolve(false)
-        }, 1000)
     })
 }
 
