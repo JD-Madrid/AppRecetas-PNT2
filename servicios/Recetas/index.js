@@ -1,6 +1,7 @@
 const IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPBDvnGr8LIznhiF3rc_hBusaOh5WLTwJCA&s"
 
 const URL_API = "http://192.168.0.12:8080"
+//const URL_API = "https://gigglingly-contextured-luigi.ngrok-free.dev"   // para alex xd
 
 //LLamando a la api 
 const getRecetas = (token) => {
