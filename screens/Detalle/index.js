@@ -108,12 +108,6 @@ const styles = StyleSheet.create({
         color: "#999999ff"
     },
     icono_favorito: {
-        // marginLeft: 12,
-        // justifyContent: "flex-start",
-        // backgroundColor: "#fcfcfcff",
-        // borderRadius: 40,
-        // padding: 10,
-        // elevation: 3
         marginLeft: 12,
         justifyContent: "flex-start",
         backgroundColor: "#fcfcfcff",

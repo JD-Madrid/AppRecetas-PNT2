@@ -1,6 +1,6 @@
 import { Button, ButtonGroup } from '@rneui/themed'
-import { useState, useRef } from 'react'
-import { TextInput, View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, TouchableOpacity, Image, Alert } from "react-native"
+import { useState } from 'react'
+import { TextInput, View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Image, Alert } from "react-native"
 import { Rating } from 'react-native-ratings'
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -17,10 +17,7 @@ export default function FormularioRecetas() {
     const { recetaData } = useRoute().params || {}
     const navigation = useNavigation()
     const [errores, setErrores] = useState({})
-    // prevención de envíos duplicados
     const [isSubmitting, setIsSubmitting] = useState(false)
-    // referencia para controlar el picker manualmente (solución iOS)
-    const pickerRef = useRef(null)
 
     const [receta, setReceta] = useState({
         nombre: recetaData?.nombre || "",
@@ -29,21 +26,19 @@ export default function FormularioRecetas() {
         tiempo: recetaData?.tiempo || "",
         dificultad: recetaData?.dificultad || "",
         valoracion: recetaData?.valoracion || 0,
-        imagen: recetaData?.imagen || null // Campo de imagen añadido
+        imagen: recetaData?.imagen || null
     })
 
     const handleChange = (key, valor) => {
         setReceta(previo => ({ ...previo, [key]: valor }))
-        // Si ese campo tenía un error, lo borramos
         if (errores[key]) {
             setErrores(prev => ({ ...prev, [key]: null }));
         }
     }
 
     const handleSubmit = async () => {
-        // prevenir múltiples llamadas simultáneas
         if (isSubmitting) {
-            console.log("ya hay un envío en proceso, ignorando");
+            console.log("Ya hay un envío en proceso, ignorando");
             return;
         }
 
@@ -61,27 +56,23 @@ export default function FormularioRecetas() {
         }
 
         setIsSubmitting(true);
-        console.log("enviando receta...");
 
         try {
             if (recetaData?._id) {
-                // actualizamos la receta existente
-                console.log("editando receta ID:", recetaData._id)
+                console.log("Editando receta ID:", recetaData._id)
                 const recetaEditada = await editarReceta(recetaData._id, receta)
-                console.log("receta editada: ", recetaEditada)
+                console.log("Receta editada: ", recetaEditada)
                 
                 const todas = await getRecetas()
                 setRecetas([...todas])
                 navigation.goBack()
             } else {
-                // agregamos una NUEVA RECETA
                 const nueva = await agregarReceta(receta)
                 console.log("Nueva receta agregada:", nueva)
                 
                 const todas = await getRecetas()
                 setRecetas([...todas])
 
-                // reseteo los campos del formulario
                 setReceta({
                     nombre: "",
                     tipo: "",
@@ -121,7 +112,22 @@ export default function FormularioRecetas() {
                         />
                         {errores.nombre && <Text style={styles.error}>{String(errores.nombre)}</Text>}
 
-                        // Picker con solución iOS usando TouchableOpacity + ref
+                        <View style={styles.pickerContainer}>
+                            <RNPickerSelect
+                                placeholder={{ label: "Selecciona el tipo de receta...", value: null }}
+                                value={receta.tipo}
+                                onValueChange={(valor) => handleChange("tipo", valor)}
+                                items={[
+                                    { label: "Entrada", value: "entrada" },
+                                    { label: "Plato principal", value: "plato principal" },
+                                    { label: "Postre", value: "postre" }
+                                ]}
+                                style={styles.pickerSelectStyles}
+                            />
+                        </View>
+                        {errores.tipo && <Text style={styles.error}>{String(errores.tipo)}</Text>}
+
+                        {/* SOLUCIÓN iOS COMENTADA - TouchableOpacity + ref (no funciona en Android)
                         <TouchableOpacity 
                             onPress={() => {
                                 console.log("Abriendo picker...");
@@ -151,7 +157,7 @@ export default function FormularioRecetas() {
                                 />
                             </View>
                         </TouchableOpacity>
-                        {errores.tipo && <Text style={styles.error}>{String(errores.tipo)}</Text>}
+                        */}
 
                         <TextInput
                             style={styles.input_form}
@@ -189,12 +195,11 @@ export default function FormularioRecetas() {
                             type="star"
                             ratingCount={5}
                             imageSize={50}
-                            startingValue={receta.valoracion}
+                            defaultRating={receta.valoracion}
                             onFinishRating={(rating) => {
                                 console.log("Valoracion: ", rating)
                                 handleChange('valoracion', rating)
                             }}
-                            readonly={isSubmitting}
                         />
                         {errores.valoracion && <Text style={styles.error}>{String(errores.valoracion)}</Text>}
 
@@ -266,28 +271,39 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         fontWeight: "bold"
     },
-  
+    pickerContainer: {
+        borderWidth: 1,
+        borderColor: "#fac6c6ff",
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        marginVertical: 8,
+        backgroundColor: "#fff",
+    },
     pickerSelectStyles: {
         inputIOS: {
             fontSize: 16,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            borderRadius: 8,
             color: "black",
-            padding: 10,
-            borderWidth: 1,
-            borderColor: "#fac6c6ff",
-            borderRadius: 10,
+            paddingRight: 30,
         },
         inputAndroid: {
             fontSize: 16,
-            color: "black",
-            padding: 10,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
             borderWidth: 1,
-            borderColor: "#fac6c6ff",
-            borderRadius: 10,
+            borderColor: "gray",
+            borderRadius: 8,
+            color: "black",
+            paddingRight: 30,
+            marginVertical: 8
         },
         placeholder: {
             color: "#C7C7CD",
             fontSize: 16,
-        },
+        }
     },
     error: {
         color: "red",
