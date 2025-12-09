@@ -2,7 +2,7 @@ import React from "react";
 import { Button, View, Platform, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 
-export default function ImagenPickerComponente({ imagenSeleccionada }) {
+export default function ImagenPickerComponente({ imagenSeleccionada, customButtons }) {
     const pickImage = async () => {
         // Pedimos permiso para galería
         const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -38,6 +38,13 @@ export default function ImagenPickerComponente({ imagenSeleccionada }) {
             imagenSeleccionada(result.assets[0].uri);
         }
     };
+
+    // Si hay customButtons, renderizar los botones personalizados
+    if (customButtons) {
+        return customButtons(pickImage, takePhoto);
+    }
+
+    // Si no hay customButtons, usar los botones por defecto
     return (
         <View style={{ flexDirection: "row", justifyContent: "space-between", marginVertical: 10 }}>
             <Button title="Seleccionar Imagen" onPress={pickImage} />
