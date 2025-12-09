@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         if (auth) {
-            AsyncStorage.storeData(authServices.KEY_AUTH, auth) //Si tiene datos le inyecto/guardo la data al storage
+            AsyncStorage.storeData(authServices.KEY_AUTH, auth) //Si tiene datos le inyecto/guardo en el storage.
         } else {
             AsyncStorage.clearData()
         }
