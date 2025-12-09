@@ -2,19 +2,24 @@ import Header from "../../componentes/Header"
 import RecetasFlatList from "../../componentes/RecetasFlatList"
 import { StatusBar } from "expo-status-bar"
 
-import { FAB, Icon, Divider } from "@rneui/themed"
+import { FAB, Icon } from "@rneui/themed"
 
 import { getRecetas, agregarReceta } from "../../servicios/Recetas"
 import { useNavigation, useFocusEffect } from "@react-navigation/native"
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { useRecetas } from "../../hooks/useRecetas"
 import { useAuth } from "../../hooks/useAuth"
+
+import SideMenu from "../../componentes/SideMenu";
+import { StyleSheet } from "react-native";
 
 export default function Home() {
 
     const { logout, auth } = useAuth()
     const navigation = useNavigation()
     const { recetas, setRecetas } = useRecetas()
+
+    const [menuVisible, setMenuVisible] = useState(false)
 
     useFocusEffect(
         useCallback(() => {
@@ -26,7 +31,12 @@ export default function Home() {
 
     return (
         <>
-            <Header logout={logout}/>
+            <Header onMenuPress={() => setMenuVisible(true)} />
+            
+            {menuVisible && (
+                <SideMenu onClose={() => setMenuVisible(false)} logout={logout} />
+            )}
+
             <RecetasFlatList recetas={recetas} />
             <FAB
                 icon={<Icon name="add" type="material" color="white" />}
@@ -39,3 +49,6 @@ export default function Home() {
     )
 }
 
+const styles = StyleSheet.create({
+
+})
