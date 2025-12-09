@@ -1,12 +1,12 @@
-
 const IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPBDvnGr8LIznhiF3rc_hBusaOh5WLTwJCA&s"
 
 const URL_API = "http://192.168.0.12:8080"
 
 //LLamando a la api 
-const getRecetas = () => {
+const getRecetas = (token) => {
     return new Promise((resolve, reject) => {
-        fetch(`${URL_API}/recetas`)
+        fetch(`${URL_API}/recetas`, {
+        })
             .then(response => {
                 if (response.ok) {
                     return response.json()
@@ -27,13 +27,15 @@ const getRecetas = () => {
 
 //Em el caso del POST debemos pasarle 3 datos al fetch para que sepa que tipo 
 //de metodo es. 1- Json 2-Encabezado y cuerpo 3- header de autorizacion (si la tiene)  
-const agregarReceta = (receta) => {
+const agregarReceta = (receta, token) => {
     return new Promise((resolve, reject) => {
         fetch(`${URL_API}/recetas`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
+            //Agregar un COMPONENTE DE IMAGENES (EXPO IMAGEN PICKER)
             body: JSON.stringify({ ...receta, imagen: IMAGE_URL })
         })
             .then(response => {
@@ -51,10 +53,14 @@ const agregarReceta = (receta) => {
     });
 };
 
-
-const getRecetaById = (id) => {
+const getRecetaById = (id, token) => {
     return new Promise((resolve, reject) => {
-        fetch(`${URL_API}/recetas/${id}`)
+        fetch(`${URL_API}/recetas/${id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
             .then(response => {
                 if (response.ok) {
                     return response.json()
@@ -72,10 +78,13 @@ const getRecetaById = (id) => {
     })
 }
 
-const eliminarReceta = (id) => {
+const eliminarReceta = (id, token) => {
     return new Promise((resolve, reject) => {
         fetch(`${URL_API}/recetas/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(response => {
                 if (response.ok) {

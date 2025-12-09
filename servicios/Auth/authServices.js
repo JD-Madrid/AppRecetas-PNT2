@@ -1,3 +1,5 @@
+const KEY_AUTH = "auth"
+
 const login = async (email, contrasenia) => {
     return new Promise((resolve, reject) => {
         //Llamada a la API de autenticacion
@@ -11,7 +13,7 @@ const login = async (email, contrasenia) => {
                         fullname: `Jose Madrid`,
                         email: `admin@gmail.com`,
                         role: `admin`,
-                        permissions: [`read`,`write`,`delete`]
+                        permissions: [`read`, `write`, `delete`]
                     }
                 })
             } else {
@@ -22,8 +24,4 @@ const login = async (email, contrasenia) => {
     })
 }
 
-export default {login}
-
-//**ACA ES DONDE SE SUPONE QUE DEBE IR LA CONEXION CON LA API DEL BACKEND (FECTH) 
-//Implementar un endpoint de con MockAip, FireBase o SupaBase para conectar con una api  
-//*/
+export default { login, KEY_AUTH }
