@@ -1,12 +1,13 @@
 import { Button, ButtonGroup } from '@rneui/themed'
 import { useState } from 'react'
-import { TextInput, View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Image, Alert } from "react-native"
+import { TextInput, View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Image, Alert, TouchableOpacity, Platform } from "react-native"
 import { Rating } from 'react-native-ratings'
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { agregarReceta, getRecetas, editarReceta } from '../../servicios/Recetas';
 import { useRecetas } from "../../hooks/useRecetas"
 import ImagenPickerComponente from '../../componentes/ImagenPicker';
+import { Ionicons } from '@expo/vector-icons';
 
 //Validaciones
 import { recetaSchema } from '../../validacion/recetasSchema';
@@ -93,28 +94,97 @@ export default function FormularioRecetas() {
     }
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
-                <View style={styles.container}>
-                    <View style={styles.header}>
-                        <Text style={styles.titulo}>
-                            {recetaData?._id ? "Editar receta" : "Añadir receta"}
+        <KeyboardAvoidingView 
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <ScrollView 
+                contentContainerStyle={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+            >
+                {/* Header con botón de cerrar */}
+                <View style={styles.header}>
+                    <TouchableOpacity 
+                        onPress={() => navigation.goBack()}
+                        style={styles.closeButton}
+                        disabled={isSubmitting}
+                    >
+                        <Ionicons name="close" size={28} color="#1A1A1A" />
+                    </TouchableOpacity>
+                    <Text style={styles.titulo}>
+                        {recetaData?._id ? "Editar Receta" : "Nueva Receta"}
+                    </Text>
+                    <TouchableOpacity 
+                        onPress={handleSubmit}
+                        disabled={isSubmitting}
+                    >
+                        <Text style={[styles.guardarText, isSubmitting && styles.guardarTextDisabled]}>
+                            {isSubmitting ? "..." : "Guardar"}
                         </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.form_container}>
+                    {/* Imagen del plato */}
+                    <View style={styles.imagenContainer}>
+                        {receta.imagen ? (
+                            <Image 
+                                source={{ uri: receta.imagen }} 
+                                style={styles.imagenPreview} 
+                            />
+                        ) : (
+                            <View style={styles.imagenPlaceholder}>
+                                <Ionicons name="camera" size={40} color="#FF6B35" />
+                                <Text style={styles.imagenPlaceholderText}>Añadir foto del plato</Text>
+                            </View>
+                        )}
+                        
+                        {/* Botones personalizados de imagen */}
+                        <View style={styles.botonesImagenContainer}>
+                            <ImagenPickerComponente 
+                                imagenSeleccionada={(uri) => handleChange("imagen", uri)}
+                                customButtons={(onGaleria, onCamara) => (
+                                    <View style={styles.botonesImagen}>
+                                        <TouchableOpacity 
+                                            style={styles.botonImagen}
+                                            onPress={onGaleria}
+                                        >
+                                            <Text style={styles.botonImagenText}>Seleccionar Imagen</Text>
+                                        </TouchableOpacity>
+                                        
+                                        <TouchableOpacity 
+                                            style={styles.botonImagen}
+                                            onPress={onCamara}
+                                        >
+                                            <Text style={styles.botonImagenText}>Tomar Foto</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            />
+                        </View>
                     </View>
 
-                    <View style={styles.form_container}>
+                    {/* Nombre de la receta */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Nombre de la receta</Text>
                         <TextInput
-                            style={styles.input_form}
-                            placeholder="Nombre"
+                            style={[styles.input, errores.nombre && styles.inputError]}
+                            placeholder="Ej. Paella Valenciana"
+                            placeholderTextColor="#999"
                             value={receta.nombre}
                             onChangeText={(nuevo) => handleChange("nombre", nuevo)}
                             editable={!isSubmitting}
                         />
-                        {errores.nombre && <Text style={styles.error}>{String(errores.nombre)}</Text>}
+                        {errores.nombre && <Text style={styles.errorText}>{String(errores.nombre)}</Text>}
+                    </View>
 
-                        <View style={styles.pickerContainer}>
+                    {/* Tipo de plato */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Tipo de plato</Text>
+                        <View style={[styles.pickerContainer, errores.tipo && styles.inputError]}>
                             <RNPickerSelect
-                                placeholder={{ label: "Selecciona el tipo de receta...", value: null }}
+                                placeholder={{ label: "Seleccionar tipo", value: null }}
                                 value={receta.tipo}
                                 onValueChange={(valor) => handleChange("tipo", valor)}
                                 items={[
@@ -122,46 +192,85 @@ export default function FormularioRecetas() {
                                     { label: "Plato principal", value: "plato principal" },
                                     { label: "Postre", value: "postre" }
                                 ]}
-                                style={styles.pickerSelectStyles}
+                                style={pickerSelectStyles}
+                                Icon={() => <Ionicons name="chevron-down" size={20} color="#FF6B35" />}
                             />
                         </View>
-                        {errores.tipo && <Text style={styles.error}>{String(errores.tipo)}</Text>}
+                        {errores.tipo && <Text style={styles.errorText}>{String(errores.tipo)}</Text>}
+                    </View>
 
-                        {/* SOLUCIÓN iOS COMENTADA - TouchableOpacity + ref (no funciona en Android)
-                        <TouchableOpacity 
-                            onPress={() => {
-                                console.log("Abriendo picker...");
-                                pickerRef.current?.togglePicker();
-                            }}
-                            activeOpacity={0.7}
-                            disabled={isSubmitting}
-                        >
-                            <View pointerEvents="none">
-                                <RNPickerSelect
-                                    ref={pickerRef}
-                                    placeholder={{ label: "Selecciona el tipo de receta...", value: null }}
-                                    value={receta.tipo || null}
-                                    onValueChange={(valor) => {
-                                        console.log("Valor seleccionado:", valor);
-                                        handleChange("tipo", valor);
-                                    }}
-                                    items={[
-                                        { label: "Entrada", value: "entrada" },
-                                        { label: "Plato principal", value: "plato principal" },
-                                        { label: "Postre", value: "postre" }
-                                    ]}
-                                    style={styles.pickerSelectStyles}
-                                    useNativeAndroidPickerStyle={false}
-                                    doneText="Aceptar"
-                                    disabled={isSubmitting}
-                                />
-                            </View>
-                        </TouchableOpacity>
-                        */}
 
+                    {/* Tiempo */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Tiempo (min)</Text>
                         <TextInput
-                            style={styles.input_form}
-                            placeholder="Escribe la descripción de la receta..."
+                            style={[styles.input, errores.tiempo && styles.inputError]}
+                            placeholder="45"
+                            placeholderTextColor="#999"
+                            keyboardType="numeric"
+                            value={receta.tiempo?.toString() || ""}
+                            onChangeText={(nuevo) => handleChange("tiempo", nuevo)}
+                            editable={!isSubmitting}
+                        />
+                        {errores.tiempo && <Text style={styles.errorText}>{String(errores.tiempo)}</Text>}
+                    </View>
+
+                    {/* Dificultad */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Dificultad</Text>
+                        <View style={styles.dificultadContainer}>
+                            {["baja", "media", "alta"].map((nivel, index) => {
+                                const isSelected = receta.dificultad === nivel;
+                                const labels = { baja: "Fácil", media: "Media", alta: "Difícil" };
+                                return (
+                                    <TouchableOpacity
+                                        key={nivel}
+                                        style={[
+                                            styles.dificultadButton,
+                                            isSelected && styles.dificultadButtonSelected
+                                        ]}
+                                        onPress={() => handleChange("dificultad", nivel)}
+                                        disabled={isSubmitting}
+                                    >
+                                        <Text style={[
+                                            styles.dificultadText,
+                                            isSelected && styles.dificultadTextSelected
+                                        ]}>
+                                            {labels[nivel]}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                        {errores.dificultad && <Text style={styles.errorText}>{String(errores.dificultad)}</Text>}
+                    </View>
+
+                    {/* Valoración personal */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Valoración personal</Text>
+                        <Rating
+                            style={styles.rating}
+                            type="star"
+                            ratingCount={5}
+                            imageSize={40}
+                            startingValue={receta.valoracion}
+                            tintColor="#F5F5F5"
+                            onFinishRating={(rating) => {
+                                console.log("Valoracion: ", rating)
+                                handleChange('valoracion', rating)
+                            }}
+                            readonly={isSubmitting}
+                        />
+                        {errores.valoracion && <Text style={styles.errorText}>{String(errores.valoracion)}</Text>}
+                    </View>
+
+                    {/* Descripción y pasos */}
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Descripción y pasos</Text>
+                        <TextInput
+                            style={[styles.textArea, errores.descripcion && styles.inputError]}
+                            placeholder="Describe los pasos para preparar este plato..."
+                            placeholderTextColor="#999"
                             value={receta.descripcion}
                             onChangeText={(nuevo) => handleChange("descripcion", nuevo)}
                             multiline={true}
@@ -169,66 +278,24 @@ export default function FormularioRecetas() {
                             textAlignVertical="top"
                             editable={!isSubmitting}
                         />
-                        {errores.descripcion && <Text style={styles.error}>{String(errores.descripcion)}</Text>}
+                        {errores.descripcion && <Text style={styles.errorText}>{String(errores.descripcion)}</Text>}
+                    </View>
 
-                        <TextInput
-                            style={styles.input_form}
-                            placeholder="Tiempo"
-                            keyboardType="numeric"
-                            value={receta.tiempo?.toString() || ""}
-                            onChangeText={(nuevo) => handleChange("tiempo", nuevo)}
-                            editable={!isSubmitting}
-                        />
-                        {errores.tiempo && <Text style={styles.error}>{String(errores.tiempo)}</Text>}
-
-                        <ButtonGroup
-                            containerStyle={styles.boton_group_dificultad}
-                            buttons={["baja", "media", "alta"]}
-                            selectedIndex={["baja", "media", "alta"].indexOf(receta.dificultad)}
-                            onPress={(index) => handleChange("dificultad", ["baja", "media", "alta"][index])}
-                            disabled={isSubmitting}
-                        />
-                        {errores.dificultad && <Text style={styles.error}>{String(errores.dificultad)}</Text>}
-
-                        <Rating
-                            style={styles.rating_container}
-                            type="star"
-                            ratingCount={5}
-                            imageSize={50}
-                            defaultRating={receta.valoracion}
-                            onFinishRating={(rating) => {
-                                console.log("Valoracion: ", rating)
-                                handleChange('valoracion', rating)
-                            }}
-                        />
-                        {errores.valoracion && <Text style={styles.error}>{String(errores.valoracion)}</Text>}
-
-                        <ImagenPickerComponente 
-                            imagenSeleccionada={(uri) => handleChange("imagen", uri)} 
-                        />
-                        {receta.imagen && (
-                            <View style={{ marginVertical: 10, alignItems: "center" }}>
-                                <Image 
-                                    source={{ uri: receta.imagen }} 
-                                    style={{ width: 150, height: 150, borderRadius: 10 }} 
-                                />
-                            </View>
+                    {/* Botón de guardar grande */}
+                    <TouchableOpacity 
+                        style={[styles.guardarButton, isSubmitting && styles.guardarButtonDisabled]}
+                        onPress={handleSubmit}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? (
+                            <Text style={styles.guardarButtonText}>Guardando...</Text>
+                        ) : (
+                            <>
+                                <Ionicons name="bookmark" size={20} color="#FFF" />
+                                <Text style={styles.guardarButtonText}>Guardar Receta</Text>
+                            </>
                         )}
-                    </View>
-
-                    <View style={styles.botones}>
-                        <Button 
-                            title={isSubmitting ? "Guardando..." : "Aceptar"}
-                            onPress={handleSubmit}
-                            disabled={isSubmitting}
-                            loading={isSubmitting}
-                        />
-                        <Button 
-                            title="Cancelar" 
-                            onPress={() => navigation.goBack()}
-                            disabled={isSubmitting}
-                        />
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -238,75 +305,218 @@ export default function FormularioRecetas() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 15,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#F5F5F5"
+    },
+    scrollContainer: {
+        paddingBottom: 30
     },
     header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
-        padding: 15
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        backgroundColor: "#FFF",
+        borderBottomWidth: 1,
+        borderBottomColor: "#E0E0E0"
+    },
+    closeButton: {
+        padding: 4
     },
     titulo: {
-        fontSize: 35,
-        fontWeight: "bold"
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#1A1A1A"
+    },
+    guardarText: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#FF6B35"
+    },
+    guardarTextDisabled: {
+        color: "#CCC"
     },
     form_container: {
-        gap: 20
+        paddingHorizontal: 20,
+        paddingTop: 20
     },
-    botones: {
+    imagenContainer: {
+        marginBottom: 24,
+        position: "relative"
+    },
+    imagenPreview: {
+        width: "100%",
+        height: 200,
+        borderRadius: 16,
+        backgroundColor: "#E0E0E0"
+    },
+    imagenPlaceholder: {
+        width: "100%",
+        height: 200,
+        borderRadius: 16,
+        backgroundColor: "#F0F0F0",
         justifyContent: "center",
-        flexDirection: "row",
-        gap: 10,
-        padding: 25
-    },
-    input_form: {
-        borderWidth: 1,
-        borderColor: "#fac6c6ff",
-        borderRadius: 10,
-        padding: 10
-    },
-    rating_container: {},
-    boton_group_dificultad: {
-        overflow: "hidden",
-        borderRadius: 10,
+        alignItems: "center",
         borderWidth: 2,
-        fontWeight: "bold"
+        borderColor: "#E0E0E0",
+        borderStyle: "dashed"
+    },
+    imagenPlaceholderText: {
+        marginTop: 12,
+        fontSize: 14,
+        color: "#666",
+        fontWeight: "500"
+    },
+    botonesImagenContainer: {
+        marginTop: 16
+    },
+    botonesImagen: {
+        flexDirection: "row",
+        gap: 12,
+        justifyContent: "center"
+    },
+    botonImagen: {
+        backgroundColor: "#FF6B35",
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        minWidth: 150,
+        alignItems: "center",
+        shadowColor: "#FF6B35",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 3
+    },
+    botonImagenText: {
+        color: "#FFF",
+        fontSize: 14,
+        fontWeight: "600"
+    },
+    inputGroup: {
+        marginBottom: 20
+    },
+    label: {
+        fontSize: 15,
+        fontWeight: "600",
+        color: "#1A1A1A",
+        marginBottom: 8
+    },
+    input: {
+        backgroundColor: "#FFF",
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        fontSize: 16,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        color: "#1A1A1A"
+    },
+    inputError: {
+        borderColor: "#E74C3C"
+    },
+    textArea: {
+        backgroundColor: "#FFF",
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        fontSize: 16,
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        color: "#1A1A1A",
+        minHeight: 120
     },
     pickerContainer: {
+        backgroundColor: "#FFF",
+        borderRadius: 12,
         borderWidth: 1,
-        borderColor: "#fac6c6ff",
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        marginVertical: 8,
-        backgroundColor: "#fff",
+        borderColor: "#E0E0E0",
+        paddingHorizontal: 8
     },
-    pickerSelectStyles: {
-        inputIOS: {
-            fontSize: 16,
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            borderRadius: 8,
-            color: "black",
-            paddingRight: 30,
-        },
-        inputAndroid: {
-            fontSize: 16,
-            paddingHorizontal: 10,
-            paddingVertical: 8,
-            borderWidth: 1,
-            borderColor: "gray",
-            borderRadius: 8,
-            color: "black",
-            paddingRight: 30,
-            marginVertical: 8
-        },
-        placeholder: {
-            color: "#C7C7CD",
-            fontSize: 16,
-        }
+    dificultadContainer: {
+        flexDirection: "row",
+        gap: 10
     },
-    error: {
-        color: "red",
-        fontSize: 14,
+    dificultadButton: {
+        flex: 1,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        backgroundColor: "#FFF",
+        borderWidth: 1,
+        borderColor: "#E0E0E0",
+        alignItems: "center"
+    },
+    dificultadButtonSelected: {
+        backgroundColor: "#FF6B35",
+        borderColor: "#FF6B35"
+    },
+    dificultadText: {
+        fontSize: 15,
+        fontWeight: "500",
+        color: "#666"
+    },
+    dificultadTextSelected: {
+        color: "#FFF",
+        fontWeight: "600"
+    },
+    rating: {
+        alignSelf: "flex-start",
+        paddingVertical: 8
+    },
+    errorText: {
+        color: "#E74C3C",
+        fontSize: 13,
+        marginTop: 6,
+        marginLeft: 4
+    },
+    guardarButton: {
+        backgroundColor: "#FF6B35",
+        borderRadius: 12,
+        paddingVertical: 16,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 8,
+        marginTop: 12,
+        shadowColor: "#FF6B35",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5
+    },
+    guardarButtonDisabled: {
+        backgroundColor: "#CCC",
+        shadowOpacity: 0
+    },
+    guardarButtonText: {
+        color: "#FFF",
+        fontSize: 16,
+        fontWeight: "600"
     }
-})
+});
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 10,
+        color: "#1A1A1A",
+        paddingRight: 30
+    },
+    inputAndroid: {
+        fontSize: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 10,
+        color: "#1A1A1A",
+        paddingRight: 30
+    },
+    placeholder: {
+        color: "#999",
+        fontSize: 16
+    },
+    iconContainer: {
+        top: 14,
+        right: 12
+    }
+});

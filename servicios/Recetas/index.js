@@ -1,30 +1,28 @@
-const IMAGE_URL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpPBDvnGr8LIznhiF3rc_hBusaOh5WLTwJCA&s"
 
-const URL_API = "http://192.168.0.12:8080"
-//const URL_API = "https://gigglingly-contextured-luigi.ngrok-free.dev"   // para alex xd
+//const URL_API = "http://192.168.0.12:8080"
+const URL_API = "https://gigglingly-contextured-luigi.ngrok-free.dev"   // para alex xd
 
 //LLamando a la api 
 const getRecetas = (token) => {
     return new Promise((resolve, reject) => {
         fetch(`${URL_API}/recetas`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`   // ← acá se envía
+            }
         })
-            .then(response => {
-                if (response.ok) {
-                    return response.json()
-                } else {
-                    throw new Error("Error al obtener las recetas")
-                }
-            })
-            .then(data => {
-                // console.log("data", data)
-                resolve(data)
-            })
-            .catch(error => {
-                // console.error("Error", error)
-                reject(error)
-            })
-    })
-}
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Error al obtener las recetas");
+            }
+        })
+        .then(data => resolve(data))
+        .catch(error => reject(error));
+    });
+};
 
 //Em el caso del POST debemos pasarle 3 datos al fetch para que sepa que tipo 
 //de metodo es. 1- Json 2-Encabezado y cuerpo 3- header de autorizacion (si la tiene)  
