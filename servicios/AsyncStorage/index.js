@@ -20,5 +20,18 @@ export const getData = async (key) => {
 }
 
 //Limpiamos la data cuando hacemos logout
+export const clearData = async () => {
+    try {
+        await AsyncStorage.clear()
+    } catch (error) {
+        console.log("Error al eliminar los datos", error)
+    }
+}
+
+export default {
+    storeData,
+    getData,
+    clearData
+}
 
 

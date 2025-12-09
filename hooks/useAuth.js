@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { storeData, getData } from "../servicios/AsyncStorage/index.js"
-import AuthServices from "../servicios/Auth/authServices.js"
+import AsyncStorage from "../servicios/AsyncStorage/index.js"
 import authServices from "../servicios/Auth/authServices.js";
 
 const AuthData = createContext()
@@ -10,7 +9,7 @@ export function AuthProvider({ children }) {
     const [auth, setAuth] = useState(null)
 
     useEffect(() => {
-        getData(authServices.KEY_AUTH)
+        AsyncStorage.getData(authServices.KEY_AUTH)
             .then((data) => {
                 console.log("Datos obtenidos de AsuncStorage", data)
                 if (data) {
@@ -23,7 +22,9 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         if (auth) {
-            storeData(AuthServices.KEY_AUTH, auth) //Si tiene datos le inycto la data al storage
+            AsyncStorage.storeData(authServices.KEY_AUTH, auth) //Si tiene datos le inyecto/guardo en el storage.
+        } else {
+            AsyncStorage.clearData()
         }
     }, [auth])
 

@@ -1,53 +1,34 @@
-import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import { Icon, Divider } from "@rneui/themed";
-import { FontAwesome } from "@expo/vector-icons";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Divider, Icon } from "@rneui/themed";
 
-export default function Header({ logout }) {
+export default function Header({ onMenuPress }) {
+
     return (
         <View style={styles.container}>
-            
-            <View style={styles.topRow}>
-                <Text style={styles.titulo}>Descubrir</Text>
-                <TouchableOpacity>
-                    <Icon
-                        name="menu"
-                        type="material"
-                        size={45}
-                        color="#000"
-                    />
-                </TouchableOpacity>
-            </View>
-            <Divider width={1} style={styles.divider} />
-            <TouchableOpacity onPress={logout} style={styles.logoutButton}>
-                <FontAwesome name="sign-out" size={24} color="black" />
+            <Text style={styles.titulo}>Descubrir</Text>
+
+            <TouchableOpacity onPress={onMenuPress} style={styles.icon_menu}>
+                <Icon name="menu" type="material" size={45} color="#000" />
             </TouchableOpacity>
 
+            <Divider width={1} style={styles.divider} />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        width: "100%",
-        padding: 10
-    },
-    topRow: {
         flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
-        justifyContent: "space-between"
+        padding: 15,
     },
     titulo: {
         fontSize: 30,
         fontWeight: "bold",
         paddingLeft: 5
     },
-    divider: {
-        marginTop: 10,
-        marginBottom: 10
-    },
-    logoutButton: {
-        alignSelf: "flex-end",
-        padding: 10,
-        marginRight: 10
+    icon_menu: {
+        paddingLeft: 160
     }
 });
