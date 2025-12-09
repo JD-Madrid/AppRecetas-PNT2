@@ -1,11 +1,12 @@
 import { Button, ButtonGroup } from '@rneui/themed'
 import { useState } from 'react'
-import { TextInput, View, Text, StyleSheet, ScrollView, KeyboardAvoidingView } from "react-native"
+import { TextInput, View, Text, StyleSheet, ScrollView, KeyboardAvoidingView,Image} from "react-native"
 import { Rating } from 'react-native-ratings'
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { agregarReceta, getRecetas, editarReceta } from '../../servicios/Recetas';
 import { useRecetas } from "../../hooks/useRecetas"
+import ImagenPickerComponente from '../../componentes/ImagenPicker';
 
 //Validaciones
 import { recetaSchema } from '../../validacion/recetasSchema';
@@ -25,7 +26,8 @@ export default function FormularioRecetas() {
         descripcion: recetaData?.descripcion || "",
         tiempo: recetaData?.tiempo || "",
         dificultad: recetaData?.dificultad || "",
-        valoracion: recetaData?.valoracion || 0
+        valoracion: recetaData?.valoracion || 0,
+        imagen: recetaData?.imagen || null
     })
 
     // Funcion para ir guardando los ingresos del form
@@ -174,6 +176,14 @@ export default function FormularioRecetas() {
                             }}
                         />
                         {errores.valoracion && <Text style={styles.error}>{String(errores.valoracion)}</Text>}
+
+                        {/* ***********************COMPONENTE DE IMAGEN**************** */}
+                        <ImagenPickerComponente imagenSeleccionada={(uri) => handleChange("imagen", uri)} />
+                        {receta.imagen && (
+                            <View style={{ marginVertical: 10, alignItems: "center" }}>
+                                <Image source={{ uri: receta.imagen }} style={{ width: 150, height: 150, borderRadius: 10 }} />
+                            </View>
+                        )}
                     </View>
                     <View style={styles.botones}>
                         <Button title="Aceptar" onPress={handleSubmit} />

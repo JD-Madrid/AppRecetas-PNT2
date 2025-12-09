@@ -35,8 +35,8 @@ const agregarReceta = (receta, token) => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            //Agregar un COMPONENTE DE IMAGENES (EXPO IMAGEN PICKER)
-            body: JSON.stringify({ ...receta, imagen: IMAGE_URL })
+            // body: JSON.stringify({ ...receta, imagen: IMAGE_URL })
+            body: JSON.stringify(receta)
         })
             .then(response => {
                 if (response.ok) {
@@ -120,7 +120,7 @@ const editarReceta = (id, data) => {
                     throw new Error("Error al editar una receta")
                 }
             })
-            .then(date => {
+            .then(data => {
                 resolve(data)
             })
             .catch(error => {
