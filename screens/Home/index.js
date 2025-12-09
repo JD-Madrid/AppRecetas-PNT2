@@ -1,6 +1,7 @@
 import Header from "../../componentes/Header"
 import RecetasFlatList from "../../componentes/RecetasFlatList"
 import { StatusBar } from "expo-status-bar"
+
 import { FAB, Icon, Divider } from "@rneui/themed"
 
 import { getRecetas, agregarReceta } from "../../servicios/Recetas"

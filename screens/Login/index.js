@@ -18,7 +18,7 @@ export default function Login() {
         console.log("formData", formData)
         AuthServices.login(formData.email, formData.contrasenia).then((data) => {
             console.log("Usuario autenticado", data)
-            setAuth(data)
+            setAuth(data)  // Inyectamos la data al estado  global
             setMsjError(null)
         }).catch((error) => {
             console.log("Error ", error)

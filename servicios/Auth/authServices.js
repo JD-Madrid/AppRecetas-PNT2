@@ -1,3 +1,5 @@
+const KEY_AUTH = "auth"
+
 const login = async (email, contrasenia) => {
     return new Promise((resolve, reject) => {
         //Llamada a la API de autenticacion
@@ -22,4 +24,4 @@ const login = async (email, contrasenia) => {
     })
 }
 
-export default { login }
+export default { login, KEY_AUTH }
